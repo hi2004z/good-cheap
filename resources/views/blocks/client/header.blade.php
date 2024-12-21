@@ -62,12 +62,12 @@
                             <div class="header-search-wrapper search-wrapper-wide">
                                 <label for="q" class="sr-only">Search</label>
                                 <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
-                                <input type="search" class="form-control" name="keyword" id="keyword" placeholder="Search product ..."
+                                <input type="search" class="form-control" name="keyword" id="keyword" placeholder="Search in ..."
                                     value="{{ request()->get('keyword') }}" autofocus>
                             </div>
 
                             <!-- Retain Filters -->
-                            <input type="hidden" name="address" value="{{ request()->get('address') }}">
+                            <input type="hidden" name="selectedCity" value="{{ request()->get('selectedCity') }}">
                             <input type="hidden" name="category" value="{{ request()->get('category') }}">
                             <input type="hidden" name="minPrice" value="{{ request()->get('minPrice') }}">
                             <input type="hidden" name="maxPrice" value="{{ request()->get('maxPrice') }}">
@@ -206,7 +206,7 @@
                                         @foreach ($categories as $category)
                                         @foreach ($category->subCategories as $subCategory)
                                         <li><a
-                                                href="{{ route('seach-category') }}?subcategory={{ $subCategory->sub_category_id }}">{{ $subCategory->name_sub_category }}</a>
+                                                href="{{ route('seach-category') }}?subcategory={{ $subCategory->sub_category_id }}&selectedCity={{ request()->get('selectedCity', '') }}">{{ $subCategory->name_sub_category }}</a>
                                         </li>
                                         @endforeach
                                         @endforeach

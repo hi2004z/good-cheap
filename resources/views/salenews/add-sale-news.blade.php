@@ -209,7 +209,7 @@
     }
 
     var renderData = (array, select) => {
-        let row = ' <option disable value="">Chọn</option>';
+        let row = ' <option disable value="">Select</option>';
         array.forEach(element => {
             row += `<option data-id="${element.code}" value="${element.name}">${element.name}</option>`
         });

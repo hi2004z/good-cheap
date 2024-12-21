@@ -8,11 +8,12 @@ use App\Http\Controllers\PartnerProfileController;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use PHPUnit\Framework\TestStatus\Notice;
+use Illuminate\Notifications\Notifiable;
 use App\Models\Transactions;
 
 class User extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -75,13 +76,13 @@ class User extends Authenticatable
 
 
 
-    public function listings() {
-         return $this->hasMany(SaleNews::class,'user_id');
-        }
+    public function listings()
+    {
+        return $this->hasMany(SaleNews::class, 'user_id');
+    }
 
     public function transactions()
     {
         return $this->hasMany(Transactions::class, 'user_id');
     }
-
 }

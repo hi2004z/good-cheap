@@ -189,6 +189,7 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/sale-news/{id}/toggle-status', [BlogController::class, 'toggleStatus'])->name('saleNews.toggleStatus');
     });
+    Route::get('/review-details/{id}', [SaleNewsController::class, 'reviewDetails'])->name('review-details');
     Route::get('/salenews/{id}/promote', [SaleNewsController::class, 'promote'])->name('salenew.promote');
     Route::get('/salenews-status', [SaleNewsController::class, 'getAllSaleStatus'])->name('sl.index');
     Route::get('/confirmedSale/{id}', [SaleNewsController::class, 'confirmedSale'])->name('sl.confirmedSale');

@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 
+date_default_timezone_set('Asia/Ho_Chi_Minh');
+
 define('LARAVEL_START', microtime(true));
 
 // Determine if the application is in maintenance mode...

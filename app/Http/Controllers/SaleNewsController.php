@@ -308,32 +308,32 @@ class SaleNewsController extends Controller
     public function getAllSaleStatus()
     {
         $data = SaleNews::with('vipPackage', 'firstImage', 'sub_category')
-            ->where('status', 1)->where('is_delete', null)->where('user_id', auth()->user()->user_id);
+            ->where('status', 1)->where('channel_id', null)->where('is_delete', null)->where('user_id', auth()->user()->user_id);
 
-        $count_now_showing = $data->where('approved', 1)->where('is_delete', null)->count();
-        $list_now_showing = $data->where('approved', 1)->where('is_delete', null)->get();
+        $count_now_showing = $data->where('approved', 1)->where('channel_id', null)->where('is_delete', null)->count();
+        $list_now_showing = $data->where('approved', 1)->where('channel_id', null)->where('is_delete', null)->get();
 
         $list_pending_approval = SaleNews::with('vipPackage', 'firstImage', 'sub_category')
-            ->where('approved', 0)->where('is_delete', null)->where('user_id', auth()->user()->user_id)
+            ->where('approved', 0)->where('channel_id', null)->where('is_delete', null)->where('user_id', auth()->user()->user_id)
             ->get();
         $count_pending_approval = SaleNews::with('vipPackage')
-            ->where('approved', 0)->where('user_id', auth()->user()->user_id)->where('is_delete', null)->count();
+            ->where('approved', 0)->where('channel_id', null)->where('user_id', auth()->user()->user_id)->where('is_delete', null)->count();
 
 
         $count_not_accepted = SaleNews::with('vipPackage')
-            ->where('approved', 2)->where('user_id', auth()->user()->user_id)->where('is_delete', null)
+            ->where('approved', 2)->where('channel_id', null)->where('user_id', auth()->user()->user_id)->where('is_delete', null)
             ->count();
         $list_not_accepted = SaleNews::with('vipPackage', 'firstImage', 'sub_category')
-            ->where('approved', 2)->where('user_id', auth()->user()->user_id)->where('is_delete', null)
+            ->where('approved', 2)->where('channel_id', null)->where('user_id', auth()->user()->user_id)->where('is_delete', null)
             ->get();
 
         $count_hidden = SaleNews::with('vipPackage')
             ->where('status', 0)
-            ->where('approved', 1)->where('user_id', auth()->user()->user_id)->where('is_delete', null)
+            ->where('approved', 1)->where('channel_id', null)->where('user_id', auth()->user()->user_id)->where('is_delete', null)
             ->count();
         $list_hidden = SaleNews::with('vipPackage', 'firstImage', 'sub_category')
             ->where('status', 0)
-            ->where('approved', 1)->where('user_id', auth()->user()->user_id)->where('is_delete', null)
+            ->where('approved', 1)->where('channel_id', null)->where('user_id', auth()->user()->user_id)->where('is_delete', null)
             ->get();
         $transactionCount = Transactions::where('user_id', auth()->user()->user_id)->count();
 
@@ -402,6 +402,7 @@ class SaleNewsController extends Controller
             $news = SaleNews::with(['channel', 'images', 'firstImage', 'category', 'sub_category'])
                 ->where('sale_new_id', $id)
                 ->where('approved', 1)->where('is_delete', null)->first();
+            $title = $news->title;
             // dd($news);
 
             if (!is_null($news->channel_id)) {
@@ -453,6 +454,7 @@ class SaleNewsController extends Controller
 
                         'get_data_7subcategory' => $get_data_7subcategory,
                         'nextNewsId' => $nextNewsId,
+                        'title' => $title,
                         'prevNewsId' => $prevNewsId
                     ]);
                 }
@@ -462,6 +464,7 @@ class SaleNewsController extends Controller
                     'get_user' => $get_user_phone,
                     'data_json' => $data_json,
                     'get_data_7subcategory' => $get_data_7subcategory,
+                    'title' => $title,
                     'nextNewsId' => $nextNewsId,
                     'prevNewsId' => $prevNewsId
                 ]);
@@ -594,7 +597,7 @@ class SaleNewsController extends Controller
 
         $keyword = $request->input('keyword');
         $categoryId = $request->get('category'); // Get category filter
-        $address = $request->get('address');    // Get address filter
+        $selectedCity = $request->get('selectedCity');    // Get address filter
         $categoryId = $request->get('category'); // Get category filter
         // $keyword = $request->input('keyword');
         // $minPrice = $request->get('minPrice');
@@ -636,8 +639,8 @@ class SaleNewsController extends Controller
             });
         }
 
-        if ($address) {
-            $recentVipSaleNews->where('address', 'like', "%$address%");
+        if ($selectedCity) {
+            $recentVipSaleNews->where('address', 'like', "%$selectedCity%");
         }
         $recentVipSaleNews = $recentVipSaleNews->inRandomOrder()->get();
 
@@ -661,8 +664,8 @@ class SaleNewsController extends Controller
             });
         }
 
-        if ($address) {
-            $olderVipSaleNews->where('address', 'like', "%$address%");
+        if ($selectedCity) {
+            $olderVipSaleNews->where('address', 'like', "%$selectedCity%");
         }
         $olderVipSaleNews = $olderVipSaleNews->inRandomOrder()->get();
         // Non-VIP SaleNews with pagination
@@ -681,8 +684,8 @@ class SaleNewsController extends Controller
             });
         }
 
-        if ($address) {
-            $nonVipSaleNews->where('address', 'like', "%$address%");
+        if ($selectedCity) {
+            $nonVipSaleNews->where('address', 'like', "%$selectedCity%");
         }
 
         $nonVipSaleNews = $nonVipSaleNews->inRandomOrder()->paginate($perPage);
@@ -700,7 +703,7 @@ class SaleNewsController extends Controller
             'perPage',
             'totalNonVipSaleNews',
             'category',
-            'address',
+            'selectedCity',
             'categoryId',
             'maxPriceRange'
         ));
@@ -722,9 +725,19 @@ class SaleNewsController extends Controller
                 return $category;
             });
         $items = SaleNews::with(['user', 'sub_category.category', 'images'])
-            ->where('status', 1)
-            ->where('approved', 1)
-            ->where('is_delete', null)
+            ->leftJoin('channels', 'sale_news.channel_id', '=', 'channels.channel_id')
+            ->where(function ($query) {
+                $query->where('channels.status', 1)
+                    ->orWhereNull('channels.channel_id');
+            })
+            ->join('users', 'sale_news.user_id', '=', 'users.user_id')
+            ->where(function ($query) {
+                $query->where('users.status', 1)
+                    ->orWhereNull('users.user_id');
+            })
+            ->where('sale_news.status', 1)  // Thêm tiền tố 'sale_news.' cho cột status
+            ->where('sale_news.approved', 1)
+            ->where('sale_news.is_delete', null)
             ->when($currentCategoryId !== 'all', function ($query) use ($currentCategoryId) {
                 $query->whereHas('sub_category.category', function ($q) use ($currentCategoryId) {
                     $q->where('category_id', $currentCategoryId);
@@ -861,7 +874,7 @@ class SaleNewsController extends Controller
         $category = Category::all();
 
         $keyword = null;
-        $address = null;
+        $selectedCity = $request->get('selectedCity');
         return view('salenews.search', compact(
             'recentVipSaleNews',
             'olderVipSaleNews',
@@ -870,7 +883,7 @@ class SaleNewsController extends Controller
             'perPage',
             'totalNonVipSaleNews',
             'category',
-            'address',
+            'selectedCity',
             'categoryId',
             'maxPriceRange'
         ));
@@ -888,7 +901,7 @@ class SaleNewsController extends Controller
             // Thêm thông báo vào session sau khi thay đổi trạng thái
             session()->flash('alert', [
                 'type' => 'success',
-                'message' => "Status has been updated to{$statusMessage}!"
+                'message' => "Status has been updated to {$statusMessage}!"
             ]);
 
             // Redirect về trang trước đó (không trả về JSON nữa)
@@ -902,6 +915,46 @@ class SaleNewsController extends Controller
 
             // Redirect về trang trước đó (không trả về JSON nữa)
             return redirect()->back();
+        }
+    }
+
+    public function reviewDetails($id)
+    {
+
+        $sale_news = SaleNews::findOrFail($id);
+        if ($sale_news) {
+            if (Auth::check()) {
+                if (($sale_news->user_id) == (auth()->user()->user_id)) {
+                    $data_salenew = SaleNews::with(['channel', 'images', 'firstImage', 'sub_category'])
+                        ->where('is_delete', null)
+                        ->where('sale_new_id', $id)->first();
+                    $title = $data_salenew->title;
+                    if ($data_salenew) {
+                        $data = $data_salenew->data;
+                        $data_json = json_decode($data);
+                        return view('salenews.detail-old', [
+                            'data_salenew' => $data_salenew,
+                            'data_json' => $data_json,
+                            'title' => $title
+                        ]);
+                    }
+                    return redirect()->route('home')->with('alert', [
+                        'type' => 'error',
+                        'message' => 'No sale information found !'
+                    ]);
+                } else {
+                    return redirect()->route('home');
+                }
+            }
+            return redirect()->route('login')->with('alert', [
+                'type' => 'error',
+                'message' => 'Please log in !'
+            ]);
+        } else {
+            return redirect()->route('home')->with('alert', [
+                'type' => 'error',
+                'message' => 'No sale information found !'
+            ]);
         }
     }
 }

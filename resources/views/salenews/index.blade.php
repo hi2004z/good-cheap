@@ -177,10 +177,8 @@
 
 
 
-                                                        <a href="{{ route('salenew.detail', $item->sale_new_id) }}" class="mb-1 btn btn-outline-primary btn-rounded" style="width: 100%"><i class="fa-solid fa-eye" style="color: #74C0FC;"></i> <span>Detail</span></a>
-                                                        @if ($item->vip_package_id == null)
-                                                        <a href="{{ route('salenew.promote', $item->sale_new_id) }}" class="btn btn-primary btn-rounded" style="width: 100%"> <i class="fa-solid fa-file-invoice-dollar"></i><span>Push to the top</span></a>
-                                                        @endif
+                                                        <a href="{{ route('review-details', $item->sale_new_id) }}" class="mb-1 btn btn-outline-primary btn-rounded" style="width: 100%"><i class="fa-solid fa-eye" style="color: #74C0FC;"></i> <span>Detail</span></a>
+                                                     
                                                     </div><!-- End .product-list-action -->
                                                 </div><!-- End .col-sm-6 col-lg-3 -->
 
@@ -245,10 +243,8 @@
 
 
 
-                                                        <a href="{{ route('salenew.detail', $item->sale_new_id) }}" class="mb-1 btn btn-outline-primary btn-rounded" style="width: 100%"><i class="fa-solid fa-eye" style="color: #74C0FC;"></i> <span>Detail</span></a>
-                                                        @if ($item->vip_package_id == null)
-                                                        <a href="{{ route('salenew.promote', $item->sale_new_id) }}" class="btn btn-primary btn-rounded" style="width: 100%"> <i class="fa-solid fa-file-invoice-dollar"></i><span>Push to the top</span></a>
-                                                        @endif
+                                                        <a href="{{ route('review-details', $item->sale_new_id) }}" class="mb-1 btn btn-outline-primary btn-rounded" style="width: 100%"><i class="fa-solid fa-eye" style="color: #74C0FC;"></i> <span>Detail</span></a>
+                                                       
                                                     </div><!-- End .product-list-action -->
                                                 </div><!-- End .col-sm-6 col-lg-3 -->
 
@@ -313,7 +309,7 @@
 
 
 
-                                                        <a href="{{ route('salenew.detail', $item->sale_new_id) }}" class="mb-1 btn btn-outline-primary btn-rounded" style="width: 100%"><i class="fa-solid fa-eye" style="color: #74C0FC;"></i> <span>Detail</span></a>
+                                                        <a href="{{ route('review-details', $item->sale_new_id) }}" class="mb-1 btn btn-outline-primary btn-rounded" style="width: 100%"><i class="fa-solid fa-eye" style="color: #74C0FC;"></i> <span>Detail</span></a>
 
                                                     </div><!-- End .product-list-action -->
                                                 </div><!-- End .col-sm-6 col-lg-3 -->

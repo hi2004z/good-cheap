@@ -36,7 +36,7 @@
                     <div class="col-12 col-lg-8">
                         <div class="card mb-6">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0">Product information</h5>
+                                <h5 class="card-title mb-0">Category information</h5>
                                 <!-- Các nút nằm ngang hàng với tiêu đề -->
                                 <div>
 

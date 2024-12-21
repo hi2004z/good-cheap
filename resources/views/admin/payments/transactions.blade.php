@@ -70,7 +70,7 @@
                       @if ($transaction->upgrade == 'Upgrade Sale News')
                           <a href="{{ route('salenew.detail', ['id' => $transaction->sale_news->sale_new_id]) }}">
                               {{ $transaction->upgrade }}
-                              123
+                             
                           </a>
                       @elseif ($transaction->upgrade == 'Upgrade Channel')
                       <a href="{{ route('channels.show', ['channel' => $transaction->channel->channel_id]) }}">
@@ -111,7 +111,7 @@
                                   </tr>
                                   <tr data-dt-row="2" data-dt-column="6">
                                     <td class="col-3">Amount:</td>
-                                    <td class="col-9"><span>${{ number_format($transaction->price, 2) }}</span></td>
+                                    <td class="col-9"><span>${{ number_format($transaction->amount, 2) }}</span></td>
                                   </tr>
                                   <tr data-dt-row="2" data-dt-column="2">
                                     <td class="col-3">Upgrade:</td>

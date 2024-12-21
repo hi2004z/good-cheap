@@ -96,13 +96,13 @@
                                     :value="old('name')" required autofocus autocomplete="full_name"
                                     placeholder="Enter your username"
                                     autofocus />
-                                <x-input-error :messages="$errors->get('full_name')" class="mt-2" />
+                                <x-input-error :messages="$errors->get('full_name')" class="mt-2 text-danger" />
 
                             </div>
                             <div class="mb-3">
                                 <x-input-label for="email" :value="__('Email')" />
                                 <x-text-input type="email" class="form-control" id="email" name="email" :value="old('email')" required autocomplete="username" />
-                                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                                <x-input-error :messages="$errors->get('email')" class="mt-2 text-danger" />
                             </div>
                             <div class="mb-3 form-password-toggle">
                                 <x-input-label class="form-label" for="password" :value="__('Password')" />
@@ -116,7 +116,7 @@
                                         placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
                                         aria-describedby="password" />
                                     <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
-                                    <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                                    <x-input-error :messages="$errors->get('password')" class="mt-2 text-danger" />
                                 </div>
                             </div>
 
@@ -132,7 +132,7 @@
                                         placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
                                         aria-describedby="password" />
                                     <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
-                                    <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+                                    <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2 text-danger" />
                                 </div>
                             </div>
 

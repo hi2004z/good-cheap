@@ -23,7 +23,7 @@ class StaffForgotPasswordController extends Controller
         $request->validate([
             'email' => 'required|email|exists:staffs,email',
         ], [
-            'email.exists' => 'Email không tồn tại trong hệ thống.',
+            'email.exists' => 'Email does not exist in the system.',
         ]);
 
         $status = Password::broker('staffs')->sendResetLink(

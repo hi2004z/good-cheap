@@ -52,7 +52,8 @@
             <div class="row">
                 @foreach ($categories as $category)
                 <div class="col-6 col-sm-4 col-lg-2">
-                    <a href="{{ route('seach-category') }}?category={{ $category->category_id }}" class="cat-block">
+                    <a href="{{ route('seach-category') }}?category={{ $category->category_id }}&selectedCity={{ request()->get('selectedCity', '') }}
+" class="cat-block">
                         <figure>
                             <span>
                                 <img style="max-width: 200px;max-height: 90px;"

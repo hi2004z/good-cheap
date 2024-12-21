@@ -127,7 +127,7 @@ class WishlistController extends Controller
             // Kiểm tra xem bài đăng có phải của chính người dùng hay không
             $saleNew = SaleNews::find($request->sale_new_id);
 
-            if ($saleNew->user_id === $user->user_id) {
+            if ($saleNew->user_id == $user->user_id) {
                 return response()->json(['type' => 'error', 'message' => 'This is your own sale news. You cannot add it to your favorites list.'], 403);
             }
 

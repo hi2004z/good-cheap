@@ -17,6 +17,8 @@ use App\Services\PhpMailerService;
 use App\Models\User;
 use App\Services\TelegramService;
 use Illuminate\Support\Facades\File;
+use App\Services\CurrencyService;
+
 
 
 
@@ -26,8 +28,18 @@ class VnPayController extends Controller
      * Display a listing of the resource.
      */
 
+    protected $currencyService;
+
+    public function __construct(CurrencyService $currencyService)
+    {
+        $this->currencyService = $currencyService;
+    }
+
     public function initiatePayment(Request $request)
     {
+
+        $rate = $this->currencyService->getExchangeRate('USD', 'VND');
+
         // dd(123);
         $channel_id = $request->channel_id; // Nhận channel_id từ request
         if (isset($request->sale_new_id)) {
@@ -48,7 +60,7 @@ class VnPayController extends Controller
         $vnp_TxnRef = $OrderInfo; // Mã đơn hàng
         $vnp_OrderInfo = $OrderInfo;
         $vnp_OrderType = "topup";
-        $vnp_Amount = $vipPackage->price * 100;
+        $vnp_Amount = $vipPackage->price * $rate * 100;
         $vnp_Locale = "en";
         $vnp_BankCode = "";
         $vnp_IpAddr = $request->ip();
@@ -68,7 +80,7 @@ class VnPayController extends Controller
             "vnp_Amount" => $vnp_Amount,
             "vnp_Command" => "pay",
             "vnp_CreateDate" => date('YmdHis'),
-            "vnp_CurrCode" => "USD",
+            "vnp_CurrCode" => "VND",
             "vnp_IpAddr" => $vnp_IpAddr,
             "vnp_Locale" => $vnp_Locale,
             "vnp_OrderInfo" => $vnp_OrderInfo,
@@ -125,6 +137,8 @@ class VnPayController extends Controller
 
     public function handleIPN(TelegramService $telegramService)
     {
+
+        $rate = $this->currencyService->getExchangeRate('USD', 'VND');
         $vnp_HashSecret = env('VNPAY_SECRET_KEY');
         $vnp_SecureHash = $_GET['vnp_SecureHash'];
         $inputData = array();
@@ -147,7 +161,7 @@ class VnPayController extends Controller
         }
         $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
         if ($secureHash == $vnp_SecureHash) {
-            $vnp_Amount = $_GET['vnp_Amount'];
+            $vnp_Amount = $_GET['vnp_Amount'] / $rate;
             $vnp_BankCode = $_GET['vnp_BankCode'];
             $vnp_BankTranNo = isset($_GET['vnp_BankTranNo']) ? $_GET['vnp_BankTranNo'] : null;
             $vnp_CardType = $_GET['vnp_CardType'];
@@ -263,7 +277,7 @@ class VnPayController extends Controller
                                 <li>Sale News ID: <strong>' . htmlspecialchars($sale_news_id) . '</strong></li>
                                 <li>Period: <strong>' . $listing->vip_start_at->format('d-m-Y') . '</strong> to <strong>' . $listing->vip_end_at->format('d-m-Y') . '</strong></li>
                                 <li>Transaction ID: <strong>#' . htmlspecialchars($vnp_TransactionNo) . '</strong></li>
-                                <li>Amount Paid: <strong>$' . number_format($vnp_Amount / 100, 2) . '</strong></li>
+                                <li>Amount Paid: <strong>' . '$' .  number_format($vnp_Amount / 100, 2) . '</strong></li>
                                 <li>Payment Date: <strong>' . Carbon::now()->format('d-m-Y') . '</strong></li>
                             </ul>
                             <p>Your post has been successfully upgraded and will enjoy the benefits of the VIP package until <strong>' . $listing->vip_end_at->format('d-m-Y') . '</strong>.</p>
@@ -332,7 +346,7 @@ class VnPayController extends Controller
                                 <li>Channel ID: <strong>' . htmlspecialchars($channel_id) . '</strong></li>
                                 <li>Period: <strong>' . $Channel->vip_start_at->format('d-m-Y') . '</strong> to <strong>' . $Channel->vip_end_at->format('d-m-Y') . '</strong></li>
                                 <li>Transaction ID: <strong>#' . htmlspecialchars($vnp_TransactionNo) . '</strong></li>
-                                <li>Amount Paid: <strong>$' . number_format($vnp_Amount / 100, 2) . '</strong></li>
+                                <li>Amount Paid: <strong>' . '$' . number_format($vnp_Amount / 100, 2) . '</strong></li>
                                 <li>Payment Date: <strong>' . Carbon::now()->format('d-m-Y') . '</strong></li>
                             </ul>
                             <p>Your post has been successfully upgraded and will enjoy the benefits of the VIP package until <strong>' . $Channel->vip_end_at->format('d-m-Y') . '</strong>.</p>

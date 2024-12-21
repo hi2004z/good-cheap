@@ -125,7 +125,7 @@
             <label for="mobile-search" class="sr-only">Search</label>
             <input type="search" class="form-control" name="keyword" id="mobile-search" placeholder="Search in..." value="{{ request()->get('keyword') }}">
             <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
-            <input type="hidden" name="address" value="{{ request()->get('address') }}">
+            <input type="hidden" name="selectedCity" value="{{ request()->get('selectedCity') }}">
             <input type="hidden" name="category" value="{{ request()->get('category') }}">
             <input type="hidden" name="minPrice" value="{{ request()->get('minPrice') }}">
             <input type="hidden" name="maxPrice" value="{{ request()->get('maxPrice') }}">

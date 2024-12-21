@@ -65,7 +65,8 @@ return [
     |
     */
 
-   'timezone' => 'Asia/Ho_Chi_Minh', // Đặt múi giờ Việt Nam
+  'timezone' => env('APP_TIMEZONE', 'UTC'),
+
 
 
     /*

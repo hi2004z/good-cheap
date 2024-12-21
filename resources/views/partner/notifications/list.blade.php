@@ -82,7 +82,7 @@
                                   </tr>
                                   <tr>
                                     <td class="col-3">Content notification:</td>
-                                    <td class="col-9">{{ $notification['content_notification'] }}</td>
+                                    <td class="col-9">{!! $notification['content_notification'] !!}</td>
                                   </tr>
                                   
                                   

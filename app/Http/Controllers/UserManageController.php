@@ -7,6 +7,7 @@ use App\Models\UserFollowed;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Transactions;
 use App\Models\User;
+use App\Models\SaleNews;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
@@ -78,7 +79,7 @@ class UserManageController extends Controller
 
             DB::table('users')->where('user_id', $user->user_id)->update($updateData);
 
-            // Thông báo thành công
+
             return redirect()->back()->with('alert', [
                 'type' => 'success',
                 'message' => 'Profile updated successfully!'
@@ -91,23 +92,28 @@ class UserManageController extends Controller
         }
     }
 
-    public function show($id){
-        $user=User::findOrFail($id);
-        $sale_news = $user->saleNews()->with('sub_category', 'firstImage')
-       
-        ->where('is_delete', null)
-        ->where('approved',1)
-        ->paginate(5);
-     
-        $sale_news1 = $user->saleNews()->with('sub_category', 'firstImage')
-       
-        ->where('is_delete', null)
-        ->where('approved',1)
-        ->where('status',1)
-        ->paginate(5);
-     
-        
-       
-        return view('user.user-show',compact('user','sale_news','sale_news1'));
+    public function show($id)
+    {
+        $user = User::findOrFail($id);
+        $sale_news = SaleNews::with('sub_category', 'firstImage')
+            ->where('user_id', $user->user_id)
+
+            ->where('is_delete', null)
+            ->where('approved', 1)
+            // ->where('status', 1)
+            ->where('channel_id', null)
+            ->paginate(5);
+
+        // $sale_news1 = SaleNews::with('sub_category', 'firstImage')
+
+        //     ->where('user_id', $user->user_id)
+        //     ->where('is_delete', null)
+        //     ->where('approved', 1)
+        //     ->where('status', 0)
+        //     ->where('channel_id', null)
+        //     ->paginate(5);
+
+
+        return view('user.user-show', compact('user', 'sale_news'));
     }
 }

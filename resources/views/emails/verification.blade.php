@@ -2,11 +2,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Xác Minh Email</title>
+    <title>Email Verification</title>
 </head>
 <body>
-    <h1>Xác Minh Địa Chỉ Email</h1>
-    <p>Mã xác minh của bạn là: <strong>{{ $code }}</strong></p>
-    <p>Vui lòng nhập mã này để xác nhận tài khoản của bạn.</p>
+    <h1>Email Verification</h1>
+    <p>Your verification code is: <strong>{{ $code }}</strong></p>
+    <p>Please enter this code to verify your account.</p>
 </body>
 </html>

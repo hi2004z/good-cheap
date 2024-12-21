@@ -36,7 +36,7 @@
                             <li class="nav-item">
                                 <button type="button" class="nav-link" role="tab" data-bs-toggle="tab"
                                     data-bs-target="#navs-pills-top-profile" aria-controls="navs-pills-top-profile"
-                                    aria-selected="false">Bot Contact</button>
+                                    aria-selected="false">Bot Feedback</button>
                             </li>
 
                         </ul>

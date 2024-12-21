@@ -17,12 +17,12 @@
                     <div  id="conversations" class="list-user-mess  d-md-block"  >
 
                         @foreach ($data as $item )
-                        <a    class="list-group-item list-group-item-action border-0  user-item"  data-img="{{ $item['user']->image_user ? $item['user']->image_user : "https://i.pinimg.com/originals/c6/e5/65/c6e56503cfdd87da299f72dc416023d4.jpg" }}" data-id="{{$item['user']->user_id}}" data-name="{{$item['user']->full_name}}">
+                        <a    class="list-group-item list-group-item-action border-0  user-item"  data-img="{{ $item['user']->image_user ? $item['user']->image_user : "storage/images/user.jpg" }}" data-id="{{$item['user']->user_id}}" data-name="{{$item['user']->full_name}}">
                             <div class="d-flex align-items-start">
                                 @if ($item['user']->image_user == null)
                                 <img src="https://i.pinimg.com/originals/c6/e5/65/c6e56503cfdd87da299f72dc416023d4.jpg" class="rounded-circle mr-1" alt="Jennifer Chang"  width="40" height="40">
                                 @else
-                                <img src="{{ asset($item['user']->image_user) }}" class="rounded-circle mr-1" alt="Jennifer Chang" width="40" height="40">
+                                <img src="{{ asset($item['user']->image_user) }}" class="rounded-circle mr-1" alt="Jennifer Chang" styl="object-fit: cover;" width="40" height="40">
                                 @endif
                                 <div class="flex-grow-1 ml-3">
                                     {{ $item['user']->full_name }}

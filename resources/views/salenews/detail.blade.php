@@ -91,17 +91,17 @@
 
 
                             <div class="mb-2">
-                                @if(isset(auth()->user()->user_id ))
+                        @if(isset(auth()->user()->user_id ))
 
 
-                        @if (auth()->user()->user_id !== $get_user->user_id)
+                        @if (auth()->user()->user_id != $get_user->user_id)
 
 
                             @if ($get_user->phone_number)
                             <a href="#" class="btn btn-outline-dark btn-rounded mr-4"><i class="fa-solid fa-phone"></i> {{ $get_user->phone_number }}</a>
                             @endif
                             @if(isset(auth()->user()->user_id))
-                            <a id="message-id" href="" data-img="{{ $get_user->image_user ? $get_user->image_user : 'https://i.pinimg.com/originals/c6/e5/65/c6e56503cfdd87da299f72dc416023d4.jpg' }}" data-id="{{$new->user_id}}" data-name="{{ $get_user->full_name}}"  class="btn btn-primary btn-rounded"> <i class="fa-regular fa-comments"></i>  Message the seller </a>
+                            <a id="message-id"  style="color: white" data-img="{{ $get_user->image_user ? $get_user->image_user : 'storage/images/user.jpg' }}" data-id="{{$new->user_id}}" data-name="{{ $get_user->full_name}}"  class="btn btn-primary btn-rounded"> <i class="fa-regular fa-comments"></i>  Message the seller </a>
                             @endif
                         @endif
                         @endif
@@ -200,7 +200,7 @@
                     <div class="tab-pane fade show active" id="product-desc-tab" role="tabpanel" aria-labelledby="product-desc-link">
                         <div class="product-desc-content">
                             <h3>Sale News Information</h3>
-                            <p> {{ $new->description }}</p>
+                            <p>{!! $new->description !!}</p>
 
 
                         </div><!-- End .product-desc-content -->
@@ -415,7 +415,7 @@
                       localStorage.setItem('channelName', response.channelName);
                       localStorage.setItem('recipientName', recipientName);
                       localStorage.setItem('recipientImage', recipientImage);
-                      window.location.href = '{{ asset('message/conversations') }}';
+                       window.location.href = '{{ route('message.conversations') }}';
 
                   } else {
                       createNewChannel(recipientId);
@@ -436,7 +436,8 @@
 
                 localStorage.setItem('channelName', response.channelName);
                 localStorage.setItem('recipientName', recipientName);
-                window.location.href = '{{ asset('message/conversations') }}';
+                localStorage.setItem('recipientImage', recipientImage);
+                window.location.href = '{{ route('message.conversations') }}';
                 }
                 else{
 

@@ -7,7 +7,6 @@ use App\Models\Listing;
 use App\Models\Channel;
 use App\Models\SaleNews;
 use App\Services\PhpMailerService;
-// use App\Services\PhpMailerService;
 use Carbon\Carbon;
 use App\Models\Setting;
 
@@ -29,9 +28,11 @@ class CheckVipStatus extends Command
     public function handle()
     {
         $setting = Setting::first() ?? new Setting();
-        $currentDate = Carbon::now();
-        $threeDaysAgo = $currentDate->subDays(3);
-        $Check = Channel::with('vipPackage', 'user')->where('vip_end_at', '<', $threeDaysAgo)->get();
+        $currentDate = Carbon::now('Asia/Ho_Chi_Minh');
+
+
+        $threeDaysLater = (clone $currentDate)->addDays(3);
+        $Check = Channel::with('vipPackage', 'user')->where('vip_end_at', '<', $threeDaysLater)->get();
         // $this->info($Check);
         if ($Check->count() > 0) {
             foreach ($Check as $channel) {
@@ -39,17 +40,7 @@ class CheckVipStatus extends Command
                 $subject = 'Notice of VIP package renewal';
                 $body = '
         <div marginwidth="0" marginheight="0">
-            <div style="color: transparent; opacity: 0; font-size: 0px; border: 0; max-height: 1px; width: 1px; margin: 0px; padding: 0px; border-width: 0px !important; display: none !important; line-height: 0px !important;">
-                <img
-                    border="0"
-                    width="1"
-                    height="1"
-                    src="' . $setting->logo . '"
-                    alt=""
-                    class="CToWUd"
-                    data-bit="iit"
-                />
-            </div>
+
             <center>
                 <table align="center" border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="bodyTable">
                     <tbody>
@@ -64,14 +55,6 @@ class CheckVipStatus extends Command
                                                         <tr>
                                                             <td valign="top">
 
-                                                                    <img
-                                                                        src="https://drive.google.com/drive/folders/1Qx_x5POPc9jladjUF3c2O07kEpevQbva"
-                                                                        style="max-width: 600px; padding: 20px;"
-                                                                        id="headerImage"
-                                                                        alt="Rayobyte"
-                                                                        class="CToWUd"
-                                                                        data-bit="iit"
-                                                                    />
 
                                                             </td>
                                                         </tr>
@@ -129,7 +112,7 @@ class CheckVipStatus extends Command
                 //     }
             }
 
-            // $this->info('thanh cong');
+            $this->info('thanh cong');
         }
 
 
@@ -139,13 +122,29 @@ class CheckVipStatus extends Command
 
         // Lấy thời gian hiện tại
 
+        $this->info("Current Date: {$currentDate}");
         // Cập nhật trạng thái VIP cho các tin rao nếu gói VIP đã hết hạn
-        SaleNews::where('vip_end_at', '<', $currentDate)
+        $saleNewsUpdated = SaleNews::where('vip_end_at', '<', $currentDate)
             ->update(['vip_package_id' => null, 'vip_start_at' => null, 'vip_end_at' => null]);
 
+        // In ra thông tin nếu có bản ghi bị cập nhật
+        if ($saleNewsUpdated > 0) {
+            $this->info("Updated {$saleNewsUpdated} sale news items.");
+        } else {
+            $this->info("No sale news items need updating.");
+        }
+
         // Cập nhật trạng thái VIP cho các kênh nếu gói VIP đã hết hạn
-        Channel::where('vip_end_at', '<', $currentDate)
-            ->update(['vip_package_id' => null, 'vip_start_at' => null, 'vip_end_at' => null]);
+        $channelsUpdated = Channel::where('vip_end_at', '<', $currentDate)
+            ->update(['status' => null, 'vip_package_id' => null, 'vip_start_at' => null, 'vip_end_at' => null]);
+
+        // In ra thông tin nếu có bản ghi bị cập nhật
+        if ($channelsUpdated > 0) {
+            $this->info("Updated {$channelsUpdated} channels.");
+        } else {
+            $this->info("No channels need updating.");
+        }
+
 
         // In ra thông báo sau khi hoàn thành
         $this->info('VIP status has been checked and updated.');
