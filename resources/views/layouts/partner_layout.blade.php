@@ -137,21 +137,6 @@
 
             </ul>
           </li>
-          
-          <li class="menu-item {{ Request::is('notification/*') ? 'active open' : '' }}">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-              <i class="menu-icon tf-icons bx bx-bell"></i>
-              <div data-i18n="Payment Management">Notification</div>
-            </a>
-            <ul class="menu-sub">
-              <li class="menu-item {{ Request::is('notification/') ? 'active' : '' }}">
-                <a href="{{ route('list_notification') }}" class="menu-link">
-                  <div data-i18n="Payment Method">List Notification</div>
-                </a>
-              </li>
-            </ul>
-          </li>
-         
         </ul>
       </aside>
       <div class="layout-page">
