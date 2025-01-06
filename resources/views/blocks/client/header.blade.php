@@ -109,6 +109,12 @@
                         </div>
                         <!-- End .cart-dropdown -->
                         <div class="dropdown cart-dropdown">
+                            @foreach ($notifications as $notification)
+                                @if ($notification->status === 'unread')
+                                    <i class="fa-solid fa-circle-dot"
+                                        style="position: absolute; top: 24px; left: 75px; color: red;"></i>
+                                @endif
+                            @endforeach
                             <a href="#" class="dropdown-toggle d-flex align-items-center" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
                                 <div class="icon">
@@ -133,9 +139,13 @@
                                                                     <h6 class="mb-1">
                                                                         {{ Str::limit($notification->title_notification, 27) }}
                                                                     </h6>
-                                                                    <h5 class="mb-0">{!! Str::limit($notification->content_notification, 40) !!}</h5>
-                                                                    <small class="text-muted">
+                                                                    <h5 class="mb-0">{!! Str::limit($notification->content_notification, 30) !!}</h5>
+                                                                    <small
+                                                                        class="text-muted d-flex justify-content-between mr-4">
                                                                         {{ $notification->created_at }}
+                                                                        <div>
+                                                                            {{ $notification->status }}
+                                                                        </div>
                                                                     </small>
                                                                 </div>
                                                             </div>
