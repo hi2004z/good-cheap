@@ -277,14 +277,10 @@ class VnPayController extends Controller
                         </div>
                     </div>';
                     $result = PhpMailerService::sendEmail($to, $subject, $body);
-                    $selected_users = [$user_id];
                     $notificationData = [
                         'title_notification' => 'Upgrade Successfully',
                         'content_notification' => '<p>Your sale news and channel have been upgraded successfully.</p>',
-                        'status' => 'public',
-                        'type' => 'user', // Hoặc 'channel'
-                        'selected_users' => $user_id, 
-                        'selected_channels' => [],
+                        'user_id' => $user_id,
                         'created_at' => now(),
                         'updated_at' => now(),
                         'deleted_at' => null,

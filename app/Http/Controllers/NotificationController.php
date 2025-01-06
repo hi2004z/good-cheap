@@ -23,6 +23,8 @@ class NotificationController extends Controller
     public function detail(string $id)
     {
         $notification = Notification::findOrFail($id);
+        $notification->status = 'read';
+        $notification->save(); // Lưu lại thay đổi
         return view('notification.detail_notification', compact('notification'));
     }
 
