@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Session;
 use App\Models\Channel;
 use App\Models\Setting;
 use Illuminate\Support\ServiceProvider;
@@ -24,10 +26,12 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-
     public function boot(): void
     {
-
+        // Thiết lập ngôn ngữ dựa trên session
+        if (Session::has('locale')) {
+            App::setLocale(Session::get('locale'));
+        }
 
         // Floating-notifications
         $jsonPath = public_path('admin/js/notification.json');
@@ -35,7 +39,6 @@ class AppServiceProvider extends ServiceProvider
         $notification = $jsonData['Floating-notifications'] ?? null;
         View::share('floating_notifications', $notification);
         // End Floating-notifications
-
 
         // Embed source code
         $filePath = public_path('admin/js/seo.json');
@@ -47,9 +50,8 @@ class AppServiceProvider extends ServiceProvider
         View::share('scripts_seo', $scripts);
         // End Embed source code
 
-
-
         Paginator::useBootstrap();
+
         $setting = Setting::first() ?? new Setting();
         $categories = Category::with(['subCategories' => function ($query) {
             $query->where('status', 1);
@@ -57,10 +59,12 @@ class AppServiceProvider extends ServiceProvider
             ->where('status', 1)
             ->where('is_delete', '0')
             ->get();
+
         View::share([
             'setting' => $setting,
             'categories' => $categories,
         ]);
+
         View::composer('*', function ($view) {
             // Loại trừ các view trong thư mục admin
             if (str_starts_with($view->getName(), 'admin')) {
@@ -84,10 +88,6 @@ class AppServiceProvider extends ServiceProvider
             $mergedNotifications = $filteredNotifications->merge($notification_web)
                 ->sortByDesc('created_at')
                 ->toArray();
-
-            // Kết quả
-            // dd($mergedNotifications);
-
 
             $view->with(['notifications' => $mergedNotifications]);
         });

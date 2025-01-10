@@ -72,7 +72,7 @@ class SaleNewsController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request['variant']);
+        // Validate the input data
         $validatedData = $request->validate([
             'productTitle' => 'required|string',
             'price' => 'required|numeric|min:0',
@@ -84,21 +84,30 @@ class SaleNewsController extends Controller
             'hiddenAddress' => 'required',
             'addressDetail' => 'required',
             'images.*' => 'required|max:2048',
-
         ]);
-        // dd($validatedData, auth()->user()->user_id);
+    
         try {
+            // Check if the product title already exists
+            $existingProduct = DB::table('sale_news')->where('title', $validatedData['productTitle'])->first();
+            if ($existingProduct) {
+                return redirect()->back()->with('alert', [
+                    'type' => 'error',
+                    'message' => 'Product title already exists.',
+                ]);
+            }
+    
+            // Check if images are uploaded
             if (!$request->hasFile('images')) {
                 return redirect()->back()->with('alert', [
                     'type' => 'error',
                     'message' => 'Please upload at least one image.',
                 ]);
             }
-
-
+    
+            // Convert variant data to JSON
             $jsonData = json_encode($validatedData['variant']);
-            // dd($jsonData);
-
+    
+            // Prepare the product data for insertion
             $productData = [
                 'user_id' => auth()->user()->user_id,
                 'title' => $validatedData['productTitle'],
@@ -112,13 +121,11 @@ class SaleNewsController extends Controller
                 'status' => 1,
                 'created_at' => now(),
             ];
-
-            // dd($productData);
-            // $query=DB::table('sale_news')->insert($productData);
-
-
+    
+            // Insert the new product into the sale_news table
             $insertSaleNews = DB::table('sale_news')->insertGetId($productData);
-
+    
+            // Prepare image records
             $imageRecords = [];
             foreach ($request->file('images') as $image) {
                 $imageName = 'sale-news_' . time() . '_' . uniqid() . '.' . $image->extension();
@@ -130,28 +137,32 @@ class SaleNewsController extends Controller
                     'created_at' => now(),
                 ];
             }
+    
+            // Insert image records into the photo_gallery table
             if (!empty($imageRecords)) {
                 DB::table('photo_gallery')->insert($imageRecords);
             }
+    
+            // Return success message
             if ($insertSaleNews) {
                 return redirect()->back()->with('alert', [
                     'type' => 'success',
-                    'message' => 'Added Successfully !'
+                    'message' => 'Added successfully!',
                 ]);
             } else {
                 return redirect()->back()->with('alert', [
                     'type' => 'error',
-                    'message' => 'Không thành công !'
+                    'message' => 'Failed to add product.',
                 ]);
             }
         } catch (\Exception $e) {
             return redirect()->back()->with('alert', [
                 'type' => 'error',
-                'message' => 'Lỗi: ' . $e->getMessage() . ' in file ' . $e->getFile() . ' on line ' . $e->getLine()
+                'message' => 'Error: ' . $e->getMessage() . ' in file ' . $e->getFile() . ' on line ' . $e->getLine(),
             ]);
         }
     }
-
+    
 
     public function storeSaleNewsPartner(Request $request)
     {
