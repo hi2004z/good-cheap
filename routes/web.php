@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BlogController;
@@ -35,8 +37,17 @@ use App\Http\Controllers\DashboardController;
 
 require __DIR__ . '/auth.php';
 
+Route::get('change-language/{locale}', function ($locale) {
+    if (in_array($locale, ['en', 'vi'])) { // Chỉ cho phép en và vi
+        session(['locale' => $locale]);
+        app()->setLocale($locale);
+    }
+    return redirect()->back();
+})->name('change-language');
 
 // staff
+
+
 Route::middleware(['auth.admin'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/export-data', [DashboardController::class, 'exportData'])->name('dashboard.export.data');
@@ -148,6 +159,10 @@ Route::middleware(['auth.role.admin'])->group(function () {
 
 // user
 
+use App\Http\Controllers\CommentController;
+
+Route::post('/comments/{saleNewId}/store', [CommentController::class, 'store'])->name('comments.store');
+Route::post('/comments/{commentId}/reply', [CommentController::class, 'reply'])->name('comments.reply');
 
 Route::middleware('auth')->group(function () {
     Route::post('/channel/togglesalenew/{id}', [SaleNewsController::class, 'toggleStatus'])->name('sale-news-channel.toggleStatus');

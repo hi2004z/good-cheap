@@ -36,6 +36,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/plugins/jquery.countdown.css') }}">
     <!-- Main CSS File -->
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style1.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/plugins/nouislider/nouislider.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/skins/skin-demo-4.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/demos/demo-4.css') }}">
