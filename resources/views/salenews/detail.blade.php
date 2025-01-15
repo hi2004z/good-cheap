@@ -2,7 +2,7 @@
 
 
 @section('content')
-
+ 
 <main class="main">
 
     <div class="container">
@@ -183,6 +183,80 @@
                     </div><!-- End .col-md-6 -->
                 </div><!-- End .row -->
             </div><!-- End .product-details-top -->
+            <div id="comments-container">
+    @auth
+        <h3>Add a Comment</h3>
+        <form action="{{ route('comments.store', $new->sale_new_id) }}" method="POST">
+            @csrf
+            <div class="form-group">
+                <textarea name="content" class="form-control" rows="3" placeholder="Write a comment..." required id="content"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Comment</button>
+        </form>
+    @else
+        <p>Please <a href="{{ route('login') }}">log in</a> to add a comment.</p>
+    @endauth
+
+    @forelse ($comments as $comment)
+        <div class=" comment @if($comment->user_id == $new->user_id) seller @endif">
+            <div class="comment-header">
+                <strong>{{ $comment->user_id == $new->user_id ? 'Seller' : $comment->user->full_name }}</strong>
+                @if($comment->user_id == $new->user_id)
+                    <span class="badge badge-warning">Seller</span>
+                @endif
+            </div>
+            <p class="comment-content">{{ $comment->content }}</p>
+            
+            <!-- Reply Button -->
+            @auth
+                <button class="btn btn-reply" onclick="toggleReplyForm({{ $comment->comment_id }}, '{{ $comment->user->full_name }}')">   <i class="fas fa-reply"></i> Reply</button>
+                
+                <!-- Reply Form (hidden by default) -->
+                <div id="reply-form-{{ $comment->comment_id }}" class="reply-form" style="display:none;">
+                    <form action="{{ route('comments.reply', $comment->comment_id) }}" method="POST">
+                        @csrf
+                        <div class="form-group">
+                            <textarea name="content" class="form-control" rows="2" id="content-{{ $comment->comment_id }}" placeholder="Type your reply here..." required></textarea>
+                            <input type="hidden" name="original_commenter" value="{{ $comment->user->full_name }}"/>
+                        </div>
+                        <button type="submit" class="btn btn-secondary">Reply</button>
+                    </form>
+                </div>
+            @endauth
+
+             
+        </div>
+        <!-- Show replies -->
+        <div class="replies-container">
+                @foreach ($comment->replies as $reply)
+                    <div class="reply">
+                        <strong>{{ $reply->user->full_name }}</strong> {{ $reply->content }}
+                        
+                        
+                    </div>
+                    @auth
+                            <button class="btn btn-reply" onclick="toggleReplyForm({{ $comment->comment_id }}, '{{ $reply->user->full_name }}')">   <i class="fas fa-reply"></i> Reply</button>
+                            
+                            <!-- Reply Form for reply (hidden by default) -->
+                            <div id="reply-form-{{ $reply->comment_id }}" class="reply-form" style="display:none;">
+                                <form action="{{ route('comments.reply', $reply->comment_id) }}" method="POST">
+                                    @csrf
+                                    <div class="form-group">
+                                        <textarea name="content" class="form-control" rows="2" id="content-{{ $reply->comment_id }}" placeholder="Type your reply here..." required></textarea>
+                                        <input type="hidden" name="original_commenter" value="{{ $reply->user->full_name }}"/>
+                                    </div>
+                                    <button type="submit" class="btn btn-secondary">Reply</button>
+                                </form>
+                            </div>
+                        @endauth
+                @endforeach
+            </div>
+    @empty
+        <p>No comments yet. Be the first to comment!</p>
+    @endforelse
+</div>
+
+
 
 
 
@@ -453,7 +527,44 @@
     });
 
 </script>
+<script>
+  document.getElementById("content").addEventListener("invalid", function(event) {
+    event.target.setCustomValidity("This field is required.");
+  });
 
+  document.getElementById("content").addEventListener("input", function(event) {
+    event.target.setCustomValidity("");
+  });
+</script>
+<script>
+    // Function to toggle the visibility of the reply form
+    function toggleReplyForm(commentId, commenterName) {
+        // Find the reply form for the current comment or reply
+        const replyForm = document.getElementById('reply-form-' + commentId);
+
+        // Check if the form is already visible
+        const isFormVisible = replyForm.style.display === 'block';
+        
+        // Hide all other reply forms
+        const allReplyForms = document.querySelectorAll('.reply-form');
+        allReplyForms.forEach(form => {
+            form.style.display = 'none';
+        });
+
+        // If the form was not visible, show it
+        if (!isFormVisible) {
+            replyForm.style.display = 'block';
+        }
+
+        // Insert the commenter's name into the textarea with @ prefix
+        const textarea = replyForm.querySelector('textarea');
+        const replyText = `@${commenterName}, `;
+        textarea.value = replyText;
+
+        // Focus on the textarea for the user to start typing
+        textarea.focus();
+    }
+</script>
 
 
 @endsection

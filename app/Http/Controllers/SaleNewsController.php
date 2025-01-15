@@ -404,93 +404,86 @@ class SaleNewsController extends Controller
     }
 
     public function renderSaleNewDetail(string $id)
-    {
-        $threeDaysAgo = Carbon::now()->subDays(3);
-        // dd($get_data_7subcategory);
-        try {
-            $update_views = DB::table('sale_news')->where('sale_new_id', $id)->increment('views', 1);
+{
+    $threeDaysAgo = Carbon::now()->subDays(3);
 
-            $news = SaleNews::with(['channel', 'images', 'firstImage', 'category', 'sub_category'])
-                ->where('sale_new_id', $id)
-                ->where('approved', 1)->where('is_delete', null)->first();
-            $title = $news->title;
-            // dd($news);
+    try {
+        // Tăng lượt xem
+        DB::table('sale_news')->where('sale_new_id', $id)->increment('views', 1);
 
-            if (!is_null($news->channel_id)) {
-                $data_count_news = DB::table('sale_news')->where('channel_id', $news->channel_id)->where('approved', 1)->where('status', 1)->where('is_delete', null)->count();
-                $data_count_news_sold = DB::table('sale_news')->where('channel_id', $news->channel_id)->where('approved', 1)->where('status', 0)->where('is_delete', null)->count();
-            }
+        // Lấy thông tin chi tiết sản phẩm
+        $news = SaleNews::with(['channel', 'images', 'firstImage', 'category', 'sub_category'])
+            ->where('sale_new_id', $id)
+            ->where('approved', 1)
+            ->whereNull('is_delete')
+            ->first();
 
-
-
-            $get_user_phone = DB::table('users')->where('user_id', $news->user_id)->first();
-            $get_data_7subcategory = SaleNews::with(['channel', 'images', 'firstImage', 'sub_category'])
-                ->where('sale_news.status', 1)
-                ->whereNull('sale_news.is_delete')
-                ->where('sale_news.vip_package_id', '!=', null)
-                ->where('sale_news.approved', 1)
-                ->where('sale_news.price', '>', 0)
-                ->join('users', 'sale_news.user_id', '=', 'users.user_id')
-                ->select('sale_news.*', 'users.created_at as user_created_at')
-                // Sắp xếp các sản phẩm có vip_package_id lên đầu
-                ->orderByRaw("CASE WHEN sub_category_id = ? THEN 0 ELSE 1 END", [$news->sub_category_id])
-                ->orderByRaw("CASE WHEN users.created_at >= ? THEN 0 ELSE 1 END", [$threeDaysAgo])
-                // Sắp xếp theo thời gian tạo
-                ->orderBy('sale_news.created_at', 'desc')
-
-                // Lấy kết quả ngẫu nhiên
-                ->inRandomOrder()
-                ->take(7)
-                ->get();
-            // dd($get_data_7subcategory);
-
-
-
-            if ($news) {
-                $data = $news->data;
-                $data_json = json_decode($data);
-                $nextNews = $this->getNextSaleNewId($id);
-                $prevNews = $this->getPreviousSaleNewId($id);
-                $nextNewsId = $nextNews ? $nextNews->sale_new_id : null;
-                $prevNewsId = $prevNews ? $prevNews->sale_new_id : null;
-
-                //  dd($data_json);
-                if (!is_null($news->channel_id)) {
-                    return view('salenews.detail', [
-                        'new' => $news,
-                        'get_user' => $get_user_phone,
-                        'data_count_news' => $data_count_news,
-                        'data_count_news_sold' => $data_count_news_sold,
-                        'data_json' => $data_json,
-
-                        'get_data_7subcategory' => $get_data_7subcategory,
-                        'nextNewsId' => $nextNewsId,
-                        'title' => $title,
-                        'prevNewsId' => $prevNewsId
-                    ]);
-                }
-
-                return view('salenews.detail', [
-                    'new' => $news,
-                    'get_user' => $get_user_phone,
-                    'data_json' => $data_json,
-                    'get_data_7subcategory' => $get_data_7subcategory,
-                    'title' => $title,
-                    'nextNewsId' => $nextNewsId,
-                    'prevNewsId' => $prevNewsId
-                ]);
-            }
+        if (!$news) {
             return redirect()->back()->with('alert', [
                 'type' => 'error',
                 'message' => 'Product not found!'
             ]);
-        } catch (\Throwable $th) {
-            return redirect()->back()->with('alert', [
-                'type' => 'error',
-                'message' => ' Error : ' . $th->getMessage()
-            ]);
         }
+
+        $title = $news->title;
+
+        // Lấy số lượng tin bài
+        if (!is_null($news->channel_id)) {
+            $data_count_news = DB::table('sale_news')->where('channel_id', $news->channel_id)->where('approved', 1)->where('status', 1)->whereNull('is_delete')->count();
+            $data_count_news_sold = DB::table('sale_news')->where('channel_id', $news->channel_id)->where('approved', 1)->where('status', 0)->whereNull('is_delete')->count();
+        }
+
+        // Lấy danh sách bình luận (gồm cả trả lời)
+        $comments = $news->comments()
+            ->whereNull('parent_id') // Lấy các bình luận gốc
+            ->with('replies.user', 'user') // Lấy trả lời và thông tin người dùng
+            ->latest()
+            ->get();
+
+        // Lấy thông tin user
+        $get_user_phone = DB::table('users')->where('user_id', $news->user_id)->first();
+
+        // Lấy các sản phẩm liên quan
+        $get_data_7subcategory = SaleNews::with(['channel', 'images', 'firstImage', 'sub_category'])
+            ->where('sale_news.status', 1)
+            ->whereNull('sale_news.is_delete')
+            ->whereNotNull('sale_news.vip_package_id')
+            ->where('sale_news.approved', 1)
+            ->where('sale_news.price', '>', 0)
+            ->join('users', 'sale_news.user_id', '=', 'users.user_id')
+            ->select('sale_news.*', 'users.created_at as user_created_at')
+            ->orderByRaw("CASE WHEN sub_category_id = ? THEN 0 ELSE 1 END", [$news->sub_category_id])
+            ->orderByRaw("CASE WHEN users.created_at >= ? THEN 0 ELSE 1 END", [$threeDaysAgo])
+            ->orderBy('sale_news.created_at', 'desc')
+            ->inRandomOrder()
+            ->take(7)
+            ->get();
+
+        // Chuẩn bị dữ liệu JSON và điều hướng view
+        $data_json = json_decode($news->data);
+        $nextNews = $this->getNextSaleNewId($id);
+        $prevNews = $this->getPreviousSaleNewId($id);
+
+        return view('salenews.detail', [
+            'new' => $news,
+            'get_user' => $get_user_phone,
+            'data_count_news' => $data_count_news ?? null,
+            'data_count_news_sold' => $data_count_news_sold ?? null,
+            'data_json' => $data_json,
+            'get_data_7subcategory' => $get_data_7subcategory,
+            'nextNewsId' => $nextNews ? $nextNews->sale_new_id : null,
+            'prevNewsId' => $prevNews ? $prevNews->sale_new_id : null,
+            'title' => $title,
+            'comments' => $comments, // Gửi danh sách bình luận tới view
+        ]);
+    } catch (\Throwable $th) {
+        return redirect()->back()->with('alert', [
+            'type' => 'error',
+            'message' => ' Error : ' . $th->getMessage()
+        ]);
     }
+}
+
 
 
     public function list_salenew()

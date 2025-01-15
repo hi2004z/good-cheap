@@ -64,6 +64,10 @@ class SaleNews extends Model
             'category_id'
         );
     }
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'sale_new_id', 'sale_new_id');
+    }
 
     public function images()
     {
