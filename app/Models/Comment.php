@@ -40,12 +40,16 @@ class Comment extends Model
     // Quan hệ với các bình luận con
     public function replies()
     {
-        return $this->hasMany(Comment::class, 'parent_id');
+        return $this->hasMany(Comment::class, 'parent_id'); // 'parent_id' là cột chỉ định comment cha
     }
-
+    
     // Quan hệ với người được trả lời
     public function replyToUser()
     {
         return $this->belongsTo(User::class, 'reply_to_user_id');
     }
+    public function parentComment()
+{
+    return $this->belongsTo(Comment::class, 'parent_comment_id');
+}
 }

@@ -435,11 +435,13 @@ class SaleNewsController extends Controller
 
         // Lấy danh sách bình luận (gồm cả trả lời)
         $comments = $news->comments()
-            ->whereNull('parent_id') // Lấy các bình luận gốc
-            ->with('replies.user', 'user') // Lấy trả lời và thông tin người dùng
-            ->latest()
-            ->get();
-
+        ->whereNull('parent_id') // Lấy các bình luận gốc
+        ->with('replies.user', 'user') // Lấy trả lời và thông tin người dùng
+        ->latest() // Sắp xếp theo thời gian tạo, từ mới đến cũ
+        ->paginate(3); // Lấy 3 bình luận đầu tiên và phân trang
+    
+            $totalComments = $comments->count(); // Tổng số bình luận
+            $initialComments = $comments->take(3);
         // Lấy thông tin user
         $get_user_phone = DB::table('users')->where('user_id', $news->user_id)->first();
 
@@ -465,6 +467,8 @@ class SaleNewsController extends Controller
         $prevNews = $this->getPreviousSaleNewId($id);
 
         return view('salenews.detail', [
+          'totalComments'=>  $totalComments ,
+            'initialComments'=>$initialComments,
             'new' => $news,
             'get_user' => $get_user_phone,
             'data_count_news' => $data_count_news ?? null,
