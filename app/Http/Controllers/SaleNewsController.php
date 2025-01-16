@@ -514,13 +514,12 @@ class SaleNewsController extends Controller
 
         // Lấy user_id từ sale news
         $user_id = $item->user_id; // Giả sử SaleNews có trường user_id
-        $sale_new_id = $item->sale_new_id;
         // Tạo dữ liệu thông báo
         $notificationData = [
-            'title_notification' => 'Your message has been rejected.',
-            'content_notification' => '<p>Your message has been rejected.</p>',
+            'title_notification' => 'Your sale news has been rejected.',
+            'content_notification' => '<p>Your sale news has been rejected.</p>',
             'user_id' => $user_id,  // Gửi thông báo cho người dùng đã đăng tin
-            'sale_new_id' => $sale_new_id,  // Gửi thông báo cho người dùng đã đăng tin
+           
             'created_at' => now(),
             'updated_at' => now(),
             'deleted_at' => null,
@@ -552,14 +551,14 @@ class SaleNewsController extends Controller
 
         // Lấy user_id từ sale news
         $user_id = $item->user_id; // Giả sử SaleNews có trường user_id
-        $sale_new_id = $item->sale_new_id;
+        
 
         // Tạo dữ liệu thông báo
         $notificationData = [
-            'title_notification' => 'Your message has been accepted.',
-            'content_notification' => '<p>Your message has been accepted.</p>',
+            'title_notification' => 'Your sale news has been accepted.',
+            'content_notification' => '<p>Your sale news has been accepted.</p>',
             'user_id' => $user_id,  // Gửi thông báo cho người dùng đã đăng tin
-            'sale_new_id' => $sale_new_id,  // Gửi thông báo cho người dùng đã đăng tin
+           
             'created_at' => now(),
             'updated_at' => now(),
             'deleted_at' => null,

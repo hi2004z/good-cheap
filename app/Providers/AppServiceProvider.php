@@ -76,6 +76,7 @@ if ($userId) {
     $notifications = DB::table('notifications')
         ->where('user_id', $userId)
         ->orderBy('created_at', 'desc') // Sắp xếp theo ngày
+        
         ->get();
 } else {
     $notifications = collect([]); // Trả về một collect trống nếu người dùng chưa đăng nhập

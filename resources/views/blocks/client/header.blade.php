@@ -142,7 +142,7 @@
                                     <i class="fa-regular fa-comments"></i> <!-- Thay đổi icon ở đây -->
                                 </div>
                                 <p>Chat</p>
-                            </a>
+                            </a> 
                         </div>
                         <!-- End .compare-dropdown -->
                         <div class="dropdown cart-dropdown">
