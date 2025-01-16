@@ -5,27 +5,22 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateCommentsTable extends Migration
 {
-    public function up()
-    {
-        Schema::create('comments', function (Blueprint $table) {
-            $table->id('comment_id'); // ID của bình luận
-            $table->unsignedBigInteger('sale_new_id'); // Sản phẩm được bình luận
-            $table->unsignedBigInteger('user_id'); // Người dùng bình luận
-            $table->unsignedBigInteger('parent_id')->nullable(); // ID bình luận cha (nếu là trả lời)
-            $table->unsignedBigInteger('reply_to_user_id')->nullable(); // Người được trả lời (nếu có)
-            $table->text('content'); // Nội dung bình luận
-            $table->timestamps();
+   // database/migrations/xxxx_xx_xx_xxxxxx_add_parent_comment_id_to_comments_table.php
 
-            // Khóa ngoại
-            $table->foreign('sale_new_id')->references('sale_new_id')->on('sale_news')->onDelete('cascade');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('parent_id')->references('comment_id')->on('comments')->onDelete('cascade');
-            $table->foreign('reply_to_user_id')->references('id')->on('users')->onDelete('set null');
-        });
-    }
+public function up()
+{
+    Schema::table('comments', function (Blueprint $table) {
+        $table->unsignedBigInteger('parent_comment_id')->nullable()->after('sale_new_id');
+        $table->foreign('parent_comment_id')->references('comment_id')->on('comments')->onDelete('cascade');
+    });
+}
 
-    public function down()
-    {
-        Schema::dropIfExists('comments');
-    }
+public function down()
+{
+    Schema::table('comments', function (Blueprint $table) {
+        $table->dropForeign(['parent_comment_id']);
+        $table->dropColumn('parent_comment_id');
+    });
+}
+
 }

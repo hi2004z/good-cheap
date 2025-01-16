@@ -160,9 +160,9 @@ Route::middleware(['auth.role.admin'])->group(function () {
 // user
 
 use App\Http\Controllers\CommentController;
-
-Route::post('/comments/{saleNewId}/store', [CommentController::class, 'store'])->name('comments.store');
-Route::post('/comments/{commentId}/reply', [CommentController::class, 'reply'])->name('comments.reply');
+Route::post('/comments/store/{saleNewId}', [CommentController::class, 'store'])->name('comments.store');
+Route::post('/comments/reply/{commentId}', [CommentController::class, 'reply'])->name('comments.reply');
+Route::get('/news/{saleNewId}/all-comments', [CommentController::class, 'getAllComments']);
 
 Route::middleware('auth')->group(function () {
     Route::post('/channel/togglesalenew/{id}', [SaleNewsController::class, 'toggleStatus'])->name('sale-news-channel.toggleStatus');

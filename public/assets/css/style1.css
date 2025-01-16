@@ -4,13 +4,38 @@
 }
 
 .comment {
-    margin-bottom: 20px;
+    
     padding: 10px;
     border-bottom: 1px solid #ddd;
     display: flex;
+ 
     flex-direction: column;
+    margin-top: 10px;
+    
+}
+.highlight {
+    background-color: #ffff99; /* Màu nền highlight */
+    transition: background-color 2s ease; /* Hiệu ứng mờ dần */
 }
 
+.content_main{
+    margin-top: 10px;
+    padding-left: 20px;
+    font-size: 14px;
+    color: #666;
+    background-color: #f7f7f7;
+    padding: 8px 10px;
+    border-radius: 4px;
+    width: 300px;
+    border-left: 5px solid #ff9900;
+}
+.hidden-comment {
+    display: none;
+}
+
+.comments-list {
+    margin-top: 20px !important;
+}
 .comment.seller {
     background-color: #f9f9f9;
     border-left: 5px solid #ff9900;
@@ -19,11 +44,13 @@
 .comment-header {
     font-weight: bold;
     font-size: 16px;
+    
 }
 
 .comment-content {
-    margin-top: 10px;
+   
     font-size: 14px;
+ 
 }
 
 /* Hiển thị "Seller" cho người đăng bán */
@@ -40,6 +67,7 @@
 .replies-container {
     margin-top: 10px;
     margin-left: 40px;
+    
 }
 
 .reply {
@@ -52,18 +80,34 @@
     border-radius: 4px;
     display: flex;
     flex-direction: column;
+    margin-bottom: 0px;
      
 }
+.comment-actions {
+    display: flex;
+    align-items: center; /* Căn giữa theo chiều dọc */
+    justify-content: space-between; /* Dùng nếu cần khoảng cách đều */
+    gap: 10px; /* Khoảng cách giữa các phần tử */
+    margin-bottom: 10px;
+}
+
+.comment-days {
+    font-size: 14px;
+    color: gray; /* Màu chữ nhạt cho số ngày */
+}
+
+ 
 
 /* Nút Phản hồi */
 .btn-reply {
      
     color: rgb(129, 129, 129);
-    padding: 6px 12px;
+    margin-bottom: 10px;
     border: none;
     font-size: 14px;
     border-radius: 5px;
     cursor: pointer;
+   margin-left:50px ;
  
 }
 

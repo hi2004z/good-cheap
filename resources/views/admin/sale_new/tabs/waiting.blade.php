@@ -147,26 +147,32 @@
             <!-- Thêm margin-right cho icon để cách ra với chữ -->
 
             <p class="text-danger mb-0">
-                <!-- Sử dụng mb-0 để loại bỏ margin-bottom của đoạn văn -->
-                @php
-                // Tính số ngày và giờ còn lại đến hết 7 ngày
-                $endTime = \Carbon\Carbon::parse($item->created_at)->addDays(7); // Thời gian kết thúc sau 7 ngày
-                $remainingDays = floor(
-                \Carbon\Carbon::now()->diffInDays($endTime, false),
-                ); // Số ngày còn lại (làm tròn xuống số nguyên)
-                $remainingHours = floor(
-                \Carbon\Carbon::now()->diffInHours($endTime, false) % 24,
-                ); // Số giờ còn lại (làm tròn xuống số nguyên)
-                @endphp
+    @php
+        // Tính thời gian kết thúc (7 ngày kể từ khi tạo)
+        $endTime = \Carbon\Carbon::parse($item->created_at)->addDays(7);
 
-                @if ($remainingDays > 0)
-                {{ $remainingDays }} day
-                @endif
+        // Tính số ngày và giờ còn lại
+        $remainingDays = \Carbon\Carbon::now()->diffInDays($endTime, false);
+        $remainingHours = \Carbon\Carbon::now()->diffInHours($endTime, false) % 24;
 
-                @if ($remainingHours > 0)
-                {{ $remainingHours }} hours
-                @endif
-            </p>
+        // Kiểm tra nếu đã vượt quá 7 ngày
+        if ($remainingDays < 0 && $item->approved != 2) {
+            $item->approved = 2; // Cập nhật trạng thái thành 2
+            $item->save();       // Lưu vào cơ sở dữ liệu
+        }
+    @endphp
+
+    @if ($remainingDays > 0)
+        {{ $remainingDays }} day
+    @endif
+
+    @if ($remainingHours > 0)
+        {{ $remainingHours }} hours
+    @endif
+   
+      
+</p>
+
     </td>
 </tr>
 @else
