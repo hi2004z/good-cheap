@@ -500,46 +500,82 @@ class SaleNewsController extends Controller
     }
 
     public function reject($id)
-    {
-        try {
-            $item = SaleNews::findOrFail($id);
+{
+    try {
+        $item = SaleNews::findOrFail($id);
 
-            // Thay đổi trạng thái giữa 0 và 2
-            $item->approved = $item->approved == 2 ? 0 : 2;
-            $item->save();
+        // Thay đổi trạng thái giữa 0 và 2
+        $item->approved = $item->approved == 2 ? 0 : 2;
+        $item->save();
 
-            return redirect()->back()->with('alert', [
-                'type' => 'success',
-                'message' => ' Reject  successfully!'
-            ]);
-        } catch (\Throwable $th) {
-            return redirect()->back()->with('alert', [
-                'type' => 'error',
-                'message' => 'Error: ' . $th->getMessage()
-            ]);
-        }
+        // Lấy user_id từ sale news
+        $user_id = $item->user_id; // Giả sử SaleNews có trường user_id
+        $sale_new_id = $item->sale_new_id;
+        // Tạo dữ liệu thông báo
+        $notificationData = [
+            'title_notification' => 'Your message has been rejected.',
+            'content_notification' => '<p>Your message has been rejected.</p>',
+            'user_id' => $user_id,  // Gửi thông báo cho người dùng đã đăng tin
+            'sale_new_id' => $sale_new_id,  // Gửi thông báo cho người dùng đã đăng tin
+            'created_at' => now(),
+            'updated_at' => now(),
+            'deleted_at' => null,
+        ];
+
+        // Thêm thông báo vào bảng notifications
+        DB::table('notifications')->insert($notificationData);
+
+        return redirect()->back()->with('alert', [
+            'type' => 'success',
+            'message' => 'Reject successfully!'
+        ]);
+    } catch (\Throwable $th) {
+        return redirect()->back()->with('alert', [
+            'type' => 'error',
+            'message' => 'Error: ' . $th->getMessage()
+        ]);
     }
+}
 
     public function approve($id)
-    {
-        try {
-            $item = SaleNews::findOrFail($id);
+{
+    try {
+        $item = SaleNews::findOrFail($id);
 
-            // Thay đổi trạng thái giữa 0 và 1
-            $item->approved = $item->approved == 1 ? 0 : 1;
-            $item->save();
+        // Thay đổi trạng thái giữa 0 và 1
+        $item->approved = $item->approved == 1 ? 0 : 1;
+        $item->save();
 
-            return redirect()->back()->with('alert', [
-                'type' => 'success',
-                'message' => ' Approve successfully!'
-            ]);
-        } catch (\Throwable $th) {
-            return redirect()->back()->with('alert', [
-                'type' => 'error',
-                'message' => 'Error: ' . $th->getMessage()
-            ]);
-        }
+        // Lấy user_id từ sale news
+        $user_id = $item->user_id; // Giả sử SaleNews có trường user_id
+        $sale_new_id = $item->sale_new_id;
+
+        // Tạo dữ liệu thông báo
+        $notificationData = [
+            'title_notification' => 'Your message has been accepted.',
+            'content_notification' => '<p>Your message has been accepted.</p>',
+            'user_id' => $user_id,  // Gửi thông báo cho người dùng đã đăng tin
+            'sale_new_id' => $sale_new_id,  // Gửi thông báo cho người dùng đã đăng tin
+            'created_at' => now(),
+            'updated_at' => now(),
+            'deleted_at' => null,
+        ];
+
+        // Thêm thông báo vào bảng notifications
+        DB::table('notifications')->insert($notificationData);
+
+        return redirect()->back()->with('alert', [
+            'type' => 'success',
+            'message' => 'Approve successfully!'
+        ]);
+    } catch (\Throwable $th) {
+        return redirect()->back()->with('alert', [
+            'type' => 'error',
+            'message' => 'Error: ' . $th->getMessage()
+        ]);
     }
+}
+
     public function destroy($id)
     {
         try {
